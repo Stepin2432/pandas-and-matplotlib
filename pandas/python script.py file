@@ -1,0 +1,144 @@
+import pandas as pd
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+# Ensure the images folder exists
+os.makedirs("images", exist_ok=True)
+
+try:
+    iris = load_iris()
+    df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+    df['species'] = iris.target
+    df['species'] = df['species'].map(dict(enumerate(iris.target_names)))  # Map to species names
+    print("Dataset loaded successfully!")
+except Exception as e:
+    print(f"Error loading dataset: {e}")
+
+# Display the first few rows
+print(df.head())
+
+# Check structure
+print("\nData types:\n", df.dtypes)
+print("\nMissing values:\n", df.isnull().sum())
+
+# Clean dataset (drop or fill missing values if any)
+df.dropna(inplace=True)
+
+# Dataset loaded successfully!
+   sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)  \
+0                5.1               3.5                1.4               0.2   
+1                4.9               3.0                1.4               0.2   
+2                4.7               3.2                1.3               0.2   
+3                4.6               3.1                1.5               0.2   
+4                5.0               3.6                1.4               0.2   
+
+  species  
+0  setosa  
+1  setosa  
+2  setosa  
+3  setosa  
+4  setosa  
+
+Data types:
+ sepal length (cm)    float64
+sepal width (cm)     float64
+petal length (cm)    float64
+petal width (cm)     float64
+species               object
+dtype: object
+
+Missing values:
+ sepal length (cm)    0
+sepal width (cm)     0
+petal length (cm)    0
+petal width (cm)     0
+species              0
+dtype: int64
+
+
+# Basic statistics
+print("\nDescriptive Statistics:\n", df.describe())
+
+# Grouping by species and computing the mean
+grouped_means = df.groupby('species').mean()
+print("\nMean values by species:\n", grouped_means)
+
+Descriptive Statistics:
+        sepal length (cm)  sepal width (cm)  petal length (cm)  \
+count         150.000000        150.000000         150.000000   
+mean            5.843333          3.057333           3.758000   
+std             0.828066          0.435866           1.765298   
+min             4.300000          2.000000           1.000000   
+25%             5.100000          2.800000           1.600000   
+50%             5.800000          3.000000           4.350000   
+75%             6.400000          3.300000           5.100000   
+max             7.900000          4.400000           6.900000   
+
+       petal width (cm)  
+count        150.000000  
+mean           1.199333  
+std            0.762238  
+min            0.100000  
+25%            0.300000  
+50%            1.300000  
+75%            1.800000  
+max            2.500000  
+
+Mean values by species:
+             sepal length (cm)  sepal width (cm)  petal length (cm)  \
+species                                                              
+setosa                  5.006             3.428              1.462   
+versicolor              5.936             2.770              4.260   
+virginica               6.588             2.974              5.552   
+
+            petal width (cm)  
+species                       
+setosa                 0.246  
+versicolor             1.326  
+virginica              2.026
+
+
+sns.set(style="whitegrid")
+
+# 1. Line chart: simulate trend over time
+df_time = df.copy()
+df_time['index'] = df_time.index
+plt.figure(figsize=(10, 4))
+sns.lineplot(data=df_time, x='index', y='sepal length (cm)', hue='species')
+plt.title('Sepal Length Trend Over Index')
+plt.xlabel('Index')
+plt.ylabel('Sepal Length (cm)')
+plt.legend(title='Species')
+plt.savefig("images/line_chart.png")  # Save the plot
+plt.close()
+
+# 2. Bar chart: average petal length per species
+plt.figure(figsize=(8, 4))
+sns.barplot(x='species', y='petal length (cm)', data=df)
+plt.title('Average Petal Length by Species')
+plt.xlabel('Species')
+plt.ylabel('Petal Length (cm)')
+plt.savefig("images/bar_chart.png")  # Save the plot
+plt.close()
+
+# 3. Histogram: distribution of sepal width
+plt.figure(figsize=(8, 4))
+sns.histplot(df['sepal width (cm)'], kde=True, bins=15)
+plt.title('Distribution of Sepal Width')
+plt.xlabel('Sepal Width (cm)')
+plt.ylabel('Count')
+plt.savefig("images/histogram.png")  # Save the plot
+plt.close()
+
+# 4. Scatter plot: sepal vs. petal length
+plt.figure(figsize=(8, 4))
+sns.scatterplot(x='sepal length (cm)', y='petal length (cm)', hue='species', data=df)
+plt.title('Sepal Length vs Petal Length')
+plt.xlabel('Sepal Length (cm)')
+plt.ylabel('Petal Length (cm)')
+plt.legend(title='Species')
+plt.savefig("images/scatter_plot.png")  # Save the plot
+plt.close()
+
